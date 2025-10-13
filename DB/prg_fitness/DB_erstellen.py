@@ -1,6 +1,6 @@
 import psycopg
 
-daten = [('Anton', 47), ('Brita', 53), ('Charlie', 23), ('Denise', 27), ('Emil', 64), ('Frank', 81)]
+# daten = [('Anton', 47), ('Brita', 53), ('Charlie', 23), ('Denise', 27), ('Emil', 64), ('Frank', 81)]
 zeiten = [('Mo', '0800-1000'), ('Mo', '1000-1200'), ('Mo', '1200-1400'), ('Mo', '1400-1600'), ('Mo', '1600-1800'),
           ('Mo', '1800-2000'), ('Mo', '2000-2200'),
           ('Di', '0800-1000'), ('Di', '1000-1200'), ('Di', '1200-1400'), ('Di', '1400-1600'), ('Di', '1600-1800'),
@@ -52,6 +52,14 @@ try:
                 )''')
             except psycopg.errors.DuplicateTable:
                 pass
+
+            try:
+                cursor.execute('DROP TABLE IF EXISTS buchung')
+                cursor.execute('DROP TABLE IF EXISTS zeitslot')
+            except psycopg.errors.UndefinedTable:
+                pass
+
+
             try:
                 cursor.execute('''CREATE TABLE zeitslot (
                     id        INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -61,16 +69,18 @@ try:
                 )''')
             except psycopg.errors.DuplicateTable:
                 pass
+            cursor.executemany('INSERT INTO zeitslot (wochentag, slotzeit) VALUES (%s, %s)', zeiten)
+            print(cursor.rowcount)
+
             try:
                 cursor.execute('''CREATE TABLE buchung (
                     id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                    person_id   INTEGER REFERENCES person (id),
-                    zeitslot_id INTEGER REFERENCES zeitslot (id)
+                    person_id   INTEGER NOT NULL REFERENCES person (id) ON DELETE CASCADE,
+                    zeitslot_id INTEGER NOT NULL REFERENCES zeitslot (id) ON DELETE CASCADE
                 )''')
             except psycopg.errors.DuplicateTable:
                 pass
-            # cursor.executemany('INSERT INTO zeitslot (wochentag, slotzeit) VALUES (%s, %s)', zeiten)
-            # print(cursor.rowcount)
+
 
             # --- Mehrere Daten gleichzeitig einfügen ---
             # cursor.executemany('INSERT INTO person (name,alter) VALUES (%s, %s)', daten)
