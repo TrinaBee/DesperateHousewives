@@ -1,6 +1,5 @@
 import psycopg
 
-# daten = [('Anton', 47), ('Brita', 53), ('Charlie', 23), ('Denise', 27), ('Emil', 64), ('Frank', 81)]
 zeiten = [('Mo', '0800-1000'), ('Mo', '1000-1200'), ('Mo', '1200-1400'), ('Mo', '1400-1600'), ('Mo', '1600-1800'),
           ('Mo', '1800-2000'), ('Mo', '2000-2200'),
           ('Di', '0800-1000'), ('Di', '1000-1200'), ('Di', '1200-1400'), ('Di', '1400-1600'), ('Di', '1600-1800'),
@@ -15,10 +14,11 @@ zeiten = [('Mo', '0800-1000'), ('Mo', '1000-1200'), ('Mo', '1200-1400'), ('Mo', 
           ('Sa', '1800-2000'), ('Sa', '2000-2200'),
           ('So', '0800-1000'), ('So', '1000-1200'), ('So', '1200-1400'), ('So', '1400-1600'), ('So', '1600-1800'),
           ('So', '1800-2000'), ('So', '2000-2200'), ]
-
+# -------------------------------------------------------------------------
 # Verbindung mit postgres-DB
+# -------------------------------------------------------------------------
 try:
-    # db_conn: psycopg.Connection #type-hint um es ggf einfacher zu machen
+    db_conn: psycopg.Connection  # type-hint um es ggf einfacher zu machen
     with psycopg.connect(dbname="postgres",
                          user="postgres",
                          password="password",
@@ -34,7 +34,9 @@ except psycopg.errors.DuplicateDatabase:
     pass
 except psycopg.DatabaseError as e:
     print(e, type(e))
+# -------------------------------------------------------------------------
 # Verbindung mit prg_fitness-DB
+# -------------------------------------------------------------------------
 try:
     with psycopg.connect(dbname="prg_fitness",
                          user="postgres",
@@ -43,7 +45,9 @@ try:
                          port="5432",
                          autocommit=True) as db_conn:
         with db_conn.cursor() as cursor:
+            # -------------------------------------------------------------------------
             # --- Tabelle person anlegen ---
+            # -------------------------------------------------------------------------
             try:
                 cursor.execute('''CREATE TABLE person (
                     id    INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -53,13 +57,18 @@ try:
             except psycopg.errors.DuplicateTable:
                 pass
 
+            # -------------------------------------------------------------------------
+            # Tabellen buchung und zeitslot ververwerfen, wenn sie vorhanden sind
+            # -------------------------------------------------------------------------
             try:
-                cursor.execute('DROP TABLE IF EXISTS buchung')
-                cursor.execute('DROP TABLE IF EXISTS zeitslot')
+                cursor.execute('DROP TABLE if EXISTS buchung')
+                cursor.execute('DROP TABLE if EXISTS zeitslot')
             except psycopg.errors.UndefinedTable:
                 pass
 
-
+            # -------------------------------------------------------------------------
+            # Tabelle zeitslot
+            # -------------------------------------------------------------------------
             try:
                 cursor.execute('''CREATE TABLE zeitslot (
                     id        INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -69,9 +78,16 @@ try:
                 )''')
             except psycopg.errors.DuplicateTable:
                 pass
-            cursor.executemany('INSERT INTO zeitslot (wochentag, slotzeit) VALUES (%s, %s)', zeiten)
-            print(cursor.rowcount)
 
+            # -------------------------------------------------------------------------
+            # Zeitslots in Tabelle zeitslot einfügen
+            # -------------------------------------------------------------------------
+            cursor.executemany('INSERT INTO zeitslot (wochentag, slotzeit) VALUES (%s, %s)', zeiten)
+            # print(cursor.rowcount)
+
+            # -------------------------------------------------------------------------
+            # Tabelle buchung anlegen
+            # -------------------------------------------------------------------------
             try:
                 cursor.execute('''CREATE TABLE buchung (
                     id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -82,15 +98,7 @@ try:
                 pass
 
 
-            # --- Mehrere Daten gleichzeitig einfügen ---
-            # cursor.executemany('INSERT INTO person (name,alter) VALUES (%s, %s)', daten)
-            # print(cursor.fetch())
 
-            # --- Zeilen aus Tabelle löschen ---
-            # cursor.execute('''DELETE
-            #                   FROM person
-            #                   WHERE id > 16''')
-            # print(cursor.rowcount)
 
 except psycopg.errors.DuplicateDatabase:
     pass
