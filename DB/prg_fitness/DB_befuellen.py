@@ -15,8 +15,8 @@ try:
             # -------------------------------------------------------------------------
             # --- Mehrere Daten gleichzeitig einfügen ---
             # -------------------------------------------------------------------------
-            cursor.executemany('INSERT INTO person (name,alter) VALUES (%s, %s)', daten)
-            print(cursor.fetch())
+            # cursor.executemany('INSERT INTO person (name,alter) VALUES (%s, %s)', daten)
+            # print(cursor.fetch())
 
             # -------------------------------------------------------------------------
             # --- Zeilen aus Tabelle löschen ---
@@ -25,6 +25,10 @@ try:
             #                   FROM person
             #                   WHERE id > 16''')
             # print(cursor.rowcount)
+            cursor.execute('''DELETE FROM bilder WHERE person = 11''')
+            with open('Gesicht.png', 'rb') as datei:
+                bild = datei.read()
+                cursor.execute('INSERT INTO bilder (person,bild) VALUES (%s,%b)', (11, bild))
 
 except psycopg.errors.DuplicateDatabase:
     pass

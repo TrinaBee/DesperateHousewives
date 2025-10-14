@@ -97,7 +97,18 @@ try:
             except psycopg.errors.DuplicateTable:
                 pass
 
-
+            # -------------------------------------------------------------------------
+            # Tabelle bilder anlegen
+            # -------------------------------------------------------------------------
+            try:
+                cursor.execute('''
+                               CREATE TABLE bilder (
+                                   person INTEGER PRIMARY KEY,
+                                   bild   BYTEA,
+                                   FOREIGN KEY (person) REFERENCES person (id)
+                               )''')
+            except psycopg.errors.DuplicateTable:
+                pass
 
 
 except psycopg.errors.DuplicateDatabase:
