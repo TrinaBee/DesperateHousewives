@@ -90,9 +90,9 @@ try:
             # -------------------------------------------------------------------------
             try:
                 cursor.execute('''CREATE TABLE buchung (
-                    id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                     person_id   INTEGER NOT NULL REFERENCES person (id) ON DELETE CASCADE,
-                    zeitslot_id INTEGER NOT NULL REFERENCES zeitslot (id) ON DELETE CASCADE
+                    zeitslot_id INTEGER NOT NULL REFERENCES zeitslot (id) ON DELETE CASCADE,
+                    PRIMARY KEY (person_id, zeitslot_id)
                 )''')
             except psycopg.errors.DuplicateTable:
                 pass
