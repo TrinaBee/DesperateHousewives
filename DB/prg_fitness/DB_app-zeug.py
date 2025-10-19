@@ -102,15 +102,13 @@ def refresh():
     except psycopg.DatabaseError as e:
         print(e, type(e))
 
-    print(aktuelle_buchung)
     auswahl = int(mehrals_auswahl.get()[1])
-    print(auswahl)
     for buchung in aktuelle_buchung:
         if buchung[1] not in frequence_slots:
             frequence_slots[buchung[1]] = 1
         else:
             frequence_slots[buchung[1]] += 1
-    print(frequence_slots)
+    # print(frequence_slots)
     for i in range(lb_zeitslot.size()):
         lb_zeitslot.itemconfigure(i,background='white')
         if auswahl == 0:
