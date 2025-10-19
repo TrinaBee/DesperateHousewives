@@ -84,7 +84,52 @@ def austragen():
     except psycopg.DatabaseError as e:
         print(e, type(e))
 def refresh():
-    ...
+    aktuelle_buchung = []
+    frequence_slots = {}
+    try:
+        with psycopg.connect(dbname="prg_fitness",
+                             user="postgres",
+                             password="password",
+                             host="localhost",
+                             port="5432",
+                             autocommit=True) as db_conn:
+            with db_conn.cursor() as cursor:
+                cursor:psycopg.Cursor
+
+                for zeile in cursor.execute('''SELECT person_id, zeitslot_id FROM buchung'''):
+                    aktuelle_buchung.append(zeile)
+
+    except psycopg.DatabaseError as e:
+        print(e, type(e))
+
+    print(aktuelle_buchung)
+    auswahl = int(mehrals_auswahl.get()[1])
+    print(auswahl)
+    for buchung in aktuelle_buchung:
+        if buchung[1] not in frequence_slots:
+            frequence_slots[buchung[1]] = 1
+        else:
+            frequence_slots[buchung[1]] += 1
+    print(frequence_slots)
+    for i in range(lb_zeitslot.size()):
+        lb_zeitslot.itemconfigure(i,background='white')
+        if auswahl == 0:
+            lb_zeitslot.itemconfigure(i, background='green')
+    for zeitslot in frequence_slots:
+        if auswahl == 0:
+            lb_zeitslot.itemconfigure(zeitslot, background='white')
+        elif frequence_slots[zeitslot] > auswahl:
+            lb_zeitslot.itemconfigure(zeitslot,background='red')
+
+
+
+
+
+
+
+
+
+
 fenster = tk.Tk()
 fenster.title("Fitness-App")
 
@@ -107,8 +152,9 @@ btn_austragen = tk.Button(frame_unten, command=austragen, text="Austragen")
 btn_austragen.pack(side=tk.LEFT, fill=tk.BOTH,padx=5,pady=5)
 btn_refresh = tk.Button(frame_unten, command=refresh, text="Aktuallisieren")
 btn_refresh.pack(side=tk.LEFT, fill=tk.BOTH,padx=5,pady=5)
-mehrals = ["=0",">3",">5",">10",">15",">20",">25",">30"]
-om_mehr_als = tk.OptionMenu(frame_unten, tk.StringVar(value=mehrals[2]),*mehrals)
+mehrals = ["=0",">1",">2",">3",">4",">5",">6",">7"]
+mehrals_auswahl = tk.StringVar(value=mehrals[0])
+om_mehr_als = tk.OptionMenu(frame_unten, mehrals_auswahl,*mehrals)
 om_mehr_als.pack(side=tk.LEFT, fill=tk.BOTH,padx=5,pady=5)
 
 lb_person = tk.Listbox(frame_mitte, exportselection=tk.FALSE)
@@ -117,5 +163,5 @@ lb_zeitslot = tk.Listbox(frame_mitte, exportselection=tk.FALSE)
 lb_zeitslot.pack(side=tk.RIGHT, fill=tk.Y)
 
 befuellen()
-
+refresh()
 fenster.mainloop()
