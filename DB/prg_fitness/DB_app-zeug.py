@@ -35,7 +35,7 @@ def befuellen():
 
 def eintragen():
     if len(lb_person.curselection()) == 0 or len(lb_zeitslot.curselection()) == 0:
-        lbl_info.config(text="Bitte wählen Sie eine Person und eine Zeitslot aus!")
+        lbl_info.config(text="Bitte wählen Sie eine Person UND einen Zeitslot aus!")
         return
 
     try:
@@ -55,7 +55,7 @@ def eintragen():
                                   VALUES (%s, %s)''', (personen_id, zeitslot_id))
                 lbl_info.config(text="Sie sind eingetragen!")
     except psycopg.errors.UniqueViolation:
-        lbl_info.config(text="Sie sind für diesen Slot schon eingetragen!")
+        lbl_info.config(text="Sie haben diesen Slot schon gebucht!")
 
 
     except psycopg.DatabaseError as e:
@@ -64,7 +64,7 @@ def eintragen():
 
 def austragen():
     if len(lb_person.curselection()) == 0 or len(lb_zeitslot.curselection()) == 0:
-        lbl_info.config(text="Bitte wählen Sie eine Person und eine Zeitslot aus!")
+        lbl_info.config(text="Bitte wählen Sie eine Person UND einen Zeitslot aus!")
         return
 
     try:
@@ -85,8 +85,7 @@ def austragen():
                                   WHERE person_id = %s
                                     AND zeitslot_id = %s''', (personen_id, zeitslot_id))
                 lbl_info.config(text="Sie sind ausgetragen!")
-    # except psycopg.errors.UniqueViolation:
-    #             lbl_info.config(text="Sie hatten diesen Slot nicht gebucht!")
+
 
     except psycopg.DatabaseError as e:
         print(e, type(e))
