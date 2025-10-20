@@ -46,6 +46,18 @@ try:
                          autocommit=True) as db_conn:
         with db_conn.cursor() as cursor:
             # -------------------------------------------------------------------------
+            # Tabellen buchung und zeitslot ververwerfen, wenn sie vorhanden sind
+            # -------------------------------------------------------------------------
+            try:
+                cursor.execute('DROP TABLE if EXISTS buchung')
+                cursor.execute('DROP TABLE if EXISTS zeitslot')
+                cursor.execute('DROP TABLE if EXISTS buchung')
+                cursor.execute('DROP TABLE if EXISTS bilder')
+            except psycopg.errors.UndefinedTable:
+                pass
+
+
+            # -------------------------------------------------------------------------
             # --- Tabelle person anlegen ---
             # -------------------------------------------------------------------------
             try:
@@ -57,17 +69,10 @@ try:
             except psycopg.errors.DuplicateTable:
                 pass
 
-            # -------------------------------------------------------------------------
-            # Tabellen buchung und zeitslot ververwerfen, wenn sie vorhanden sind
-            # -------------------------------------------------------------------------
-            try:
-                cursor.execute('DROP TABLE if EXISTS buchung')
-                cursor.execute('DROP TABLE if EXISTS zeitslot')
-            except psycopg.errors.UndefinedTable:
-                pass
+
 
             # -------------------------------------------------------------------------
-            # Tabelle zeitslot
+            # Tabelle zeitslot anlegen
             # -------------------------------------------------------------------------
             try:
                 cursor.execute('''CREATE TABLE zeitslot (
