@@ -148,7 +148,7 @@ btn_eintragen = tk.Button(frame_unten, command=eintragen, text="Eintragen")
 btn_eintragen.pack(side=tk.LEFT, fill=tk.BOTH,padx=5,pady=5)
 btn_austragen = tk.Button(frame_unten, command=austragen, text="Austragen")
 btn_austragen.pack(side=tk.LEFT, fill=tk.BOTH,padx=5,pady=5)
-btn_refresh = tk.Button(frame_unten, command=refresh, text="Aktuallisieren")
+btn_refresh = tk.Button(frame_unten, command=refresh, text="Refresh")
 btn_refresh.pack(side=tk.LEFT, fill=tk.BOTH,padx=5,pady=5)
 mehrals = ["=0",">1",">2",">3",">4",">5",">6",">7"]
 mehrals_auswahl = tk.StringVar(value=mehrals[0])
