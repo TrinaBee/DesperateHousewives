@@ -25,7 +25,7 @@ try:
                          host="localhost",
                          port="5432",
                          autocommit=True) as db_conn:
-        # cursor: psycopg.Cursor #type-hint um es ggf einfacher zu machen
+        cursor: psycopg.Cursor
         with db_conn.cursor() as cursor:
             cursor.execute('CREATE DATABASE prg_fitness')
 
@@ -89,6 +89,7 @@ try:
             # -------------------------------------------------------------------------
             cursor.executemany('INSERT INTO zeitslot (wochentag, slotzeit) VALUES (%s, %s)', zeiten)
             # print(cursor.rowcount)
+            assert cursor.rowcount == 49, "Zu viele Einträge in der Zeitslot-Tabelle" #einfache sanity check, nicht sinnvoll, da Programm trotzdem weiterläuft
 
             # -------------------------------------------------------------------------
             # Tabelle buchung anlegen
