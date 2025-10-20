@@ -27,6 +27,7 @@ try:
                          autocommit=True) as db_conn:
         cursor: psycopg.Cursor
         with db_conn.cursor() as cursor:
+            cursor.execute('DROP DATABASE IF EXISTS prg_fitness')
             cursor.execute('CREATE DATABASE prg_fitness')
 
 

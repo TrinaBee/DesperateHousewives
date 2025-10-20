@@ -187,7 +187,7 @@ lb_person.pack(side=tk.LEFT, fill=tk.Y)
 
 lb_used_zeitslots = tk.Listbox(frame_mitte,selectmode=tk.SINGLE)
 lb_used_zeitslots.pack(side=tk.LEFT, fill=tk.Y)
-lb_used_zeitslots.bind("<<ButtonPress-1>>", auswahl_zeitslot)
+lb_used_zeitslots.bind("<<ButtonRelease-1>>", auswahl_zeitslot)
 lb_zeitslot = tk.Listbox(frame_mitte,selectmode=tk.SINGLE,exportselection=False)
 
 lb_zeitslot.pack(side=tk.RIGHT, fill=tk.Y)
