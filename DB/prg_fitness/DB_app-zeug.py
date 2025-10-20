@@ -10,7 +10,7 @@ def befuellen():
                              port="5432",
                              autocommit=True) as db_conn:
             with db_conn.cursor() as cursor:
-                cursor: psycopg.cursor
+                cursor: psycopg.Cursor
 
                 personen = []
                 for person in cursor.execute('''SELECT id,name,alter FROM person'''):
