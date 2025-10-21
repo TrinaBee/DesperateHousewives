@@ -19,7 +19,8 @@ def befuellen():
                     personen.append(person)
                 for elem in personen:
                     lb_person.insert(tk.END, elem)
-
+                lb_person.selection_set(0)
+                lb_person.activate(0)
 
                 zeitslots = []
                 for zeitslot in cursor.execute('''SELECT id, wochentag, slotzeit
@@ -28,7 +29,8 @@ def befuellen():
 
                 for elem in zeitslots:
                     lb_zeitslot.insert(tk.END, elem)
-
+                lb_zeitslot.selection_set(0)
+                lb_zeitslot.activate(0)
     except psycopg.DatabaseError as e:
         print(e, type(e))
 
@@ -90,9 +92,11 @@ def austragen():
     except psycopg.DatabaseError as e:
         print(e, type(e))
 
+
 def auswahl_zeitslot(event):
     aktuelle_buchung = []
     personen_id = int(lb_person.get(lb_person.curselection()[0])[0])
+    print(personen_id)
     try:
         with psycopg.connect(dbname="prg_fitness",
                              user="postgres",
@@ -103,8 +107,10 @@ def auswahl_zeitslot(event):
             with db_conn.cursor() as cursor:
                 cursor: psycopg.Cursor
 
-                for zeile in cursor.execute('''SELECT person_id, zeitslot_id
-                                               FROM buchung'''):
+                for zeile in cursor.execute('''SELECT wochentag, zeitslot
+                                               FROM zeitslot
+                                                        JOIN buchung ON buchung.zeitslot_id = zeitslot.zeitslot_id
+                                               WHERE buchung.personen_id = %s''', (personen_id)):
                     aktuelle_buchung.append(zeile)
 
     except psycopg.DatabaseError as e:
@@ -153,9 +159,6 @@ def refresh():
             lb_zeitslot.itemconfigure(zeitslot, background='red')
 
 
-
-
-
 fenster = tk.Tk()
 fenster.title("Fitness-App")
 
@@ -182,16 +185,17 @@ mehrals_auswahl = tk.StringVar(value=mehrals[0])
 om_mehr_als = tk.OptionMenu(frame_unten, mehrals_auswahl, *mehrals)
 om_mehr_als.pack(side=tk.LEFT, fill=tk.BOTH, padx=5, pady=5)
 
-lb_person = tk.Listbox(frame_mitte,selectmode=tk.SINGLE,exportselection=False)
+lb_person = tk.Listbox(frame_mitte, selectmode=tk.SINGLE, exportselection=False)
 lb_person.pack(side=tk.LEFT, fill=tk.Y)
 
-lb_used_zeitslots = tk.Listbox(frame_mitte,selectmode=tk.SINGLE)
+lb_used_zeitslots = tk.Listbox(frame_mitte, selectmode=tk.SINGLE)
 lb_used_zeitslots.pack(side=tk.LEFT, fill=tk.Y)
 lb_used_zeitslots.bind("<<ButtonRelease-1>>", auswahl_zeitslot)
-lb_zeitslot = tk.Listbox(frame_mitte,selectmode=tk.SINGLE,exportselection=False)
+lb_zeitslot = tk.Listbox(frame_mitte, selectmode=tk.SINGLE, exportselection=False)
 
 lb_zeitslot.pack(side=tk.RIGHT, fill=tk.Y)
 
 befuellen()
+auswahl_zeitslot(None)
 refresh()
 fenster.mainloop()
